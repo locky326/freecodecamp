@@ -9,8 +9,8 @@ Setup_SQL(){
   if [[ -z $Usernames_Exists_Check ]]
   then
     Create_Usernames_Schema=$($PSQL "CREATE TABLE usernames (user_id SERIAL, username VARCHAR(23) UNIQUE, games_played INT DEFAULT 1, best_game INT DEFAULT $Default_Start_Best_Score);")
-  fi # End of 'if [[ -z $Usernames_Exists_Check ]]'
-} # End of 'Setup_SQL(){'
+  fi # End of 'if [[ -z $Usernames_Exists_Check ]]   '
+} # End of 'Setup_SQL(){   '
 
 Setup_username(){
   # if username is blank or just numbers, re-start game
@@ -18,11 +18,11 @@ Setup_username(){
   # if [[ -z $1 ]]
   then
     Main_Func "Please enter a username starting with a letter"
-  fi # End of 'if [[ -z $1 || $1 =~ ^[0-9]+ ]]'
+  fi # End of 'if [[ -z $1 || $1 =~ ^[0-9]+ ]]  '
 
   # if username exists
   Check_Username_Exists=$($PSQL "SELECT exists (SELECT 1 FROM usernames WHERE username = '$1' LIMIT 1);")
-  # echo $Check_Username_Exists # This is 'f' or 't'
+  # echo $Check_Username_Exists # This is 'f' or 't  '
 
   if [[ "$Check_Username_Exists" == "f" ]]
   then
@@ -58,9 +58,9 @@ Play_Game(){
   number_of_guesses=0
 
   # increment 'games_played' in table 'usernames'
-  new_games_played=$(($2+1))
-  increment_games_played=$($PSQL "UPDATE usernames SET games_played=$new_games_played;")
-  # echo increment_games_played: $increment_games_played
+  new_games_played=$(($2))
+  increment_games_played=$($PSQL "UPDATE usernames SET games_played=$new_games_played WHERE username='$username';")
+  #   echo increment_games_played: $increment_games_played
 
   while_runner=0
   while [ $while_runner -eq 0 ]
@@ -75,7 +75,7 @@ Play_Game(){
       then 
         echo It\'s lower than that, guess again:
         number_of_guesses=$((number_of_guesses+1))
-      fi # End of 'if [[ $number_guess -gt $secret_number ]]'
+      fi #   End of 'if [[ $number_guess -gt $secret_number ]]'
 
       if [[ $number_guess -lt $secret_number ]]
       then 
@@ -91,7 +91,7 @@ Play_Game(){
         # update 'best_game' in table 'usernames' if needed
         if [[ $3 -gt $number_of_guesses ]]
         then
-          update_best_game=$($PSQL "UPDATE usernames SET best_game=$number_of_guesses")
+          update_best_game=$($PSQL "UPDATE usernames SET best_game=$number_of_guesses WHERE username='$username';")
           # echo update_best_game: $update_best_game
         fi # End of 'if [[ $3 -gt $number_of_guesses ]]'
         
